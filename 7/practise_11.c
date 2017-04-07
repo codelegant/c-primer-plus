@@ -1,7 +1,7 @@
 #include <stdio.h>
-#define GLOBAL_ARTICHOKE_PRICE 1.25F //³¯ÏÊ¼»
-#define BEET_PRICE .65F //Ìğ²Ë
-#define CARROT_PRICE .89F //ºúÂÜ²·
+#define GLOBAL_ARTICHOKE_PRICE 1.25F //æœé²œè“Ÿ
+#define BEET_PRICE .65F //ç”œèœ
+#define CARROT_PRICE .89F //èƒ¡èåœ
 
 int main(void)
 {
@@ -19,29 +19,29 @@ int main(void)
     float total_cost = 0;
 
     printf("****************************\n");
-    printf("ÇëÑ¡ÔñÄãÒªÊäÈë°õÊıµÄÊß²ËÖÖÀà£º\n");
-    printf("a) ³¯ÏÊ¼»        b) Ìğ²Ë\n");
-    printf("c) ºúÂÜ²·        q) ÍË³ö¶¨¹º\n");
+    printf("è¯·é€‰æ‹©ä½ è¦è¾“å…¥ç£…æ•°çš„è”¬èœç§ç±»ï¼š\n");
+    printf("a) æœé²œè“Ÿ        b) ç”œèœ\n");
+    printf("c) èƒ¡èåœ        q) é€€å‡ºå®šè´­\n");
     printf("****************************\n");
-    printf("ÇëÑ¡Ôñ£º");
+    printf("è¯·é€‰æ‹©ï¼š");
 
     while((choose = getchar()) != 'q'){
         switch(choose){
             case 'a':
-                printf("ÇëÊäÈëÒª¶¨¹º³¯ÏÊ¼»µÄ°õÊı£º");
+                printf("è¯·è¾“å…¥è¦å®šè´­æœé²œè“Ÿçš„ç£…æ•°ï¼š");
                 scanf("%f", &global_artichoke);
                 break;
             case 'b':
-                printf("ÇëÊäÈëÒª¶¨¹ºÌğ²ËµÄ°õÊı£º");
+                printf("è¯·è¾“å…¥è¦å®šè´­ç”œèœçš„ç£…æ•°ï¼š");
                 scanf("%f", &beet);
                 break;
             case 'c':
-                printf("ÇëÊäÈëÒª¶¨¹ººúÂÜ²·µÄ°õÊı£º");
+                printf("è¯·è¾“å…¥è¦å®šè´­èƒ¡èåœçš„ç£…æ•°ï¼š");
                 scanf("%f", &carrot);
                 break;
         }
         if((choose = getchar())=='\n')
-            printf("Çë¼ÌĞøÑ¡Ôñ£º");
+            printf("è¯·ç»§ç»­é€‰æ‹©ï¼š");
     }
 
     total_pounds = global_artichoke + beet + carrot;
@@ -71,15 +71,15 @@ int main(void)
         total_price += total_cost;
     }
 
-    printf("Ã¿°õ·ÑÓÃ£º%.2f\n", total_price/total_pounds);
-    printf("×Ü°õÊı£º%.2f\n", total_pounds);
-    printf("³¯ÏÊ¼»·ÑÓÃ£º%.2f\n", global_artichoke_cost);
-    printf("Ìğ²Ë·ÑÓÃ£º%.2f\n", beet_cost);
-    printf("ºúÂÜ²··ÑÓÃ£º%.2f\n", carrot_cost);
-    printf("×Ü·ÑÓÃ£º%.2f\n", total_price);
-    printf("ÕÛ¿Û£º%.2f\n", total_discount);
+    printf("æ¯ç£…è´¹ç”¨ï¼š%.2f\n", total_price/total_pounds);
+    printf("æ€»ç£…æ•°ï¼š%.2f\n", total_pounds);
+    printf("æœé²œè“Ÿè´¹ç”¨ï¼š%.2f\n", global_artichoke_cost);
+    printf("ç”œèœè´¹ç”¨ï¼š%.2f\n", beet_cost);
+    printf("èƒ¡èåœè´¹ç”¨ï¼š%.2f\n", carrot_cost);
+    printf("æ€»è´¹ç”¨ï¼š%.2f\n", total_price);
+    printf("æŠ˜æ‰£ï¼š%.2f\n", total_discount);
     if(total_cost)
-        printf("ÔËÊäÓë×°Ğ¶·ÑÓÃ×ÜÊı£º%.2f\n", total_cost);
+        printf("è¿è¾“ä¸è£…å¸è´¹ç”¨æ€»æ•°ï¼š%.2f\n", total_cost);
 
     return 0;
 }
