@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <windows.h>
 #define RATE_1 .15F
 #define RATE_2 .28F
 #define PAY_1 17850
@@ -54,8 +53,9 @@ int main(void)
             taxes = pay_base*RATE_1+(pay-pay_base)*RATE_2;
         }
         printf("应该交纳的税金是：%.2f\n", taxes);
+	printf("请继续选择：");
     }
-    printf("你退出了程序：\n");
+    printf("你退出了程序!\n");
 
     return 0;
 }
