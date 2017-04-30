@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <ctype.h>
 
 char get_choice(void);
 char getfirst(void);
@@ -11,14 +12,18 @@ int main(void)
     {
         switch(choice)
         {
-            case 'a':printf("Buy low, sell hight.\n");
-                     break;
-            case 'b':putchar('\a');
-                     break;
-            case 'c':count();
-                     break;
-            default:printf("Program error!\n");
-                    break;
+            case 'a':
+                printf("Buy low, sell hight.\n");
+                break;
+            case 'b':
+                putchar('\a');
+                break;
+            case 'c':
+                count();
+                break;
+            default:
+                printf("Program error!\n");
+                break;
         }
     }
     printf("Bye.\n");
@@ -53,7 +58,12 @@ char get_choice(void)
 int get_first(void)
 {
     int ch;
-    while((ch=getchar()) == '\n' || getchar() != '\n')
+    while((ch = getchar()) && (ch = tolower(ch)) && !islower(ch))
+        continue;
+
+    putchar(ch);
+    printf("\n");
+    while(getchar() != '\n')
         continue;
 
     return ch;
