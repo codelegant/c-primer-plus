@@ -50,7 +50,7 @@ char * my_strchr(char * target, char ch)
 
 void remove_enter(char * ptr)
 {
-    char * find=strchr(ptr, '\n');
+    char * find=my_strchr(ptr, '\n');
     if(find)
         *find='\0';
 }
