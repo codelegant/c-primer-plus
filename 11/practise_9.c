@@ -11,7 +11,7 @@ int main(void)
     int index=0;
 
     printf("Enter up to %d lines: \n", LIM);
-    while(ct<LIM && gets(input[ct])!=0 && input[ct][0]!='\0')
+    while(ct<LIM && gets(input[ct])!=0 && input[ct][0]!='\0' && input[ct][0]!=EOF)
         ct++;
     printf("Input end\n");
     for(index=0; index<ct; index++)
@@ -19,6 +19,7 @@ int main(void)
         remove_whitespace(input[index]);
         puts(input[index]);
     }
+    return 0;
 }
 
 void remove_whitespace(char * ptr)
