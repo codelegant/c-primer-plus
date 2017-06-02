@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define SIZE 10
-int get_rand(int);
+#define SIZE 100
+int get_rand(void);
 void sort(int [], int);
 
 void main(void)
@@ -10,10 +10,7 @@ void main(void)
     int arr[SIZE];
     int index=0;
     while(index<SIZE)
-    {
-        arr[index]=get_rand(index);
-        index++;
-    }
+        arr[index++]=get_rand();
     sort(arr, SIZE);
 
     index=0;
@@ -24,11 +21,9 @@ void main(void)
     }
 }
 
-int get_rand(int index)
+int get_rand(void)
 {
-    unsigned int seed=(unsigned int) time(NULL) +(unsigned int) index;
-    srand(seed);
-    return rand()%SIZE+1;
+    return rand()%10+1;
 }
 
 void sort(int arr[], int length)
