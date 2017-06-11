@@ -11,6 +11,7 @@ int main(void)
     char source_name[NAME_SIZE];
     char target_name[NAME_SIZE];
     char temp[BUFFER_SIZE];
+    char *ptr;
 
     puts("Enter the source file name: ");
     // 如果使用 fgets() 读取文件名
@@ -18,7 +19,7 @@ int main(void)
     scanf("%s", source_name);
     puts("Enter the target file name: ");
     scanf("%s", target_name);
-    
+
     if(!(source_ptr = fopen(source_name, "r")))
     {
         fprintf(stderr, "Can't open file: %s\n", source_name);
@@ -37,10 +38,9 @@ int main(void)
     if(ferror(target_ptr))
         fprintf(stderr, "Erro int writing file: %s.\n", target_name);
 
-    while(fgets(temp, BUFFER_SIZE, source_ptr))
+    while(ptr = fgets(temp, BUFFER_SIZE, source_ptr))
     {
-        char *ptr = temp;
-        while(*ptr != '\0')
+        while(*ptr)
         {
             *ptr = toupper(*ptr);
             ptr++;

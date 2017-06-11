@@ -16,7 +16,7 @@ int main(void)
     scanf("%s", source_name);
     puts("Enter the target file name: ");
     scanf("%s", target_name);
-    
+
     if(!(source_ptr = fopen(source_name, "r")))
     {
         fprintf(stderr, "Can't open source file: %s\n", source_name);
@@ -48,8 +48,14 @@ int main(void)
     printf("%s copy to %s.\n", source_name, target_name);
 
     if(fclose(source_ptr))
+    {
         fprintf(stderr, "Error closing file %s\n", source_name);
+        exit(EXIT_FAILURE);
+    }
     if(fclose(target_ptr))
+    {
         fprintf(stderr, "Error closing file %s\n", target_name);
+        exit(EXIT_FAILURE);
+    }
     return 0;
 }
