@@ -9,7 +9,7 @@ typedef struct name {
 } NAME;
 typedef struct student {
   NAME name;
-  float grade[3];
+  float grades[3];
   float average;
 } STUDENT;
 
@@ -22,12 +22,13 @@ int main(void) {
   STUDENT students[CSIZE] = {
     {{"Lai", "Chuanfeng"}},
     {{"Xiao", "Chaiyun"}},
-    {{"Lai", "Xuyuan"}}
+    {{"Lai", "Shuyuan"}},
+    {{"Lai", "Aiyun"}}
   };
   GetInfo(students, CSIZE);
-  //CountAverage(students, CSIZE);
-  //ShowInfo(students, CSIZE);
-  //ShowAverage(students, CSIZE);
+  CountAverage(students, CSIZE);
+  ShowInfo(students, CSIZE);
+  ShowAverage(students, CSIZE);
   return 0;
 }
 
@@ -38,38 +39,54 @@ void GetInfo(STUDENT students [], int size) {
   printf("Enter the name of student: ");
   while (gets(fullname) && fullname[0] != '\0') {
     student_is_exsit = false;
-    printf("1 fullname is %s.\n", fullname);
-    printf("1 student_is_exsit is %d.\n", student_is_exsit);
-    for (int i=0; i<size; i++) {
+    for (int i=0; i < size; i++) {
       char temp_name[40];
       STUDENT current = students[i];
       strcat(temp_name, current.name.firstname);
       strcat(temp_name, " ");
       strcat(temp_name, current.name.lastname);
-      printf("2 fullname is %s.\n", fullname);
-      printf("2 student_is_exsit is %d.\n", student_is_exsit);
       if (!strcmp(fullname, temp_name)) {
-        int j=3;
+        temp_name[0] = '\0';
+        int j = 3;
         student_is_exsit = true;
         printf("Enter three grades of %s: \n", fullname);
-        while (j--) scanf("%f", &current.grade[j]);
+        while (j--) scanf("%f", &students[i].grades[j]);
         // 清除上面分数输入后的回车
         while(getchar() != '\n') continue; 
         break;
       } 
+      temp_name[0] = '\0';
     }
     if(!student_is_exsit)
       printf("There has no student which fullname is %s.\n", fullname);
-    printf("3 fullname is %s.\n", fullname);
-    printf("3 student_is_exsit is %d\n", student_is_exsit);
     puts("--------------------------------------------------------");
     printf("Enter the name of student: ");
   }
 
 }
 void CountAverage(STUDENT students [], int size) {
+  for (int i = 0; i < size; i++) {
+    float total = 0;
+    for (int j = 0; j < 3; j++) {
+      total += students[i].grades[j];
+    }
+    students[i].average = total/3;
+  }
 }
 void ShowInfo(STUDENT students [], int size) {
+  for (int i = 0; i < size; i++) {
+    printf("Fullname is %s %s, grades is ", students[i].name.firstname,
+        students[i].name.lastname);
+    for (int j =0; j < 3; j++) {
+      printf("%.2f ", students[i].grades[j]);
+    }
+    printf(", average is %.2f\n", students[i].average);
+  }
 }
 void ShowAverage(STUDENT students [], int size) {
+  float total = 0;
+  for (int i = 0; i < size; i++) {
+    total += students[i].average;
+  }
+  printf("Class average is %.2f\n", total/size);
 }
