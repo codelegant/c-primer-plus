@@ -70,15 +70,15 @@ int main(void) {
 }
 
 void GetFilename(int flight) {
-  const int kFlightNameLength = 21; // 为什么是21？
-  const int kFilenameLength = 16; // 为什么12不行？
-  const char kPostfix[5] = ".dat";
-  char flight_name[kFlightNameLength];
+  const int kFlightNameLength = snprintf(NULL, 0, "%d", flight);
+  const int kFilenameLength = 16;
+  const char * const kPostfix = ".dat";
+  char *p_flight_name = (char *)malloc(kFlightNameLength + 1);
   char filename[kFilenameLength] = "flight_";
 
   p_filename = (char *)malloc(kFilenameLength * sizeof (char));
-  snprintf(flight_name, kFlightNameLength, "%d", flight);
-  strncat(filename, flight_name, strlen(flight_name));
+  snprintf(p_flight_name, kFlightNameLength + 1, "%d", flight);
+  strncat(filename, p_flight_name, strlen(p_flight_name));
   strncat(filename, kPostfix, strlen(kPostfix));
 
   if (p_filename != NULL)
@@ -97,6 +97,7 @@ void LoadAndInitFile(int flight, struct Seat airplane[]) {
   FILE *p_seat;
   const int kSize = sizeof (struct Seat);
   GetFilename(flight);
+
   printf("LoadAndInitFile p_filename address %p\n", p_filename);
   printf("LoadAndInitFile p_filename is %s***\n", p_filename);
 
@@ -105,7 +106,6 @@ void LoadAndInitFile(int flight, struct Seat airplane[]) {
   printf("\n%s\n", STARS);
 
   if ((p_seat = fopen(p_filename, "a+b")) == NULL) {
-    printf("LoadAndInitFile error Filename is %s\n", p_filename);
     fprintf(stderr, "Can't open %s file in a+b mode.\n", p_filename);
     exit(EXIT_FAILURE);
   }
