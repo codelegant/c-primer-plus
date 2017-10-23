@@ -1,13 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #define MAXNAME 40
 #define MAXSEATS 12
 #define STARS "****************************************"
-const int flights[4] = {102, 311, 444, 519};
+char *p_filename = NULL;
+const int kFlights[4] = {102, 311, 444, 519};
 
-struct seat {
+struct Seat {
   int flight;
   int number;
   bool assignable;
@@ -16,25 +18,25 @@ struct seat {
   char lastname[MAXNAME];
 };
 
-char * GetFilename(int flight);
-void LoadAndInitFile(int flight, struct seat airplane[]);
+void GetFilename(int flight);
+void LoadAndInitFile(int flight, struct Seat airplane[]);
 int ChooseFlight(void);
 char OperateFlight(int flight);
-void ShowNumber(const struct seat airplane[], int length);
-void ShowList(const struct seat airplane[], int length);
-void ShowAlphabeticalList(const struct seat airplane[], int length);
-void AssignSeat(struct seat airplane[], int length, int flight);
-void ConfirmAssignSeat(struct seat airplane[], int length, int flight);
-void DeleteSeat(struct seat airplane[], int length, int flight);
+void ShowNumber(const struct Seat airplane[], int length);
+void ShowList(const struct Seat airplane[], int length);
+void ShowAlphabeticalList(const struct Seat airplane[], int length);
+void AssignSeat(struct Seat airplane[], int length, int flight);
+void ConfirmAssignSeat(struct Seat airplane[], int length, int flight);
+void DeleteSeat(struct Seat airplane[], int length, int flight);
 void IgnoreChar(void);
-void SaveToFile(struct seat airplane[], int length, int flight);
+void SaveToFile(struct Seat airplane[], int length, int flight);
 
 int main(void) {
-  struct seat airplane[MAXSEATS];
+  struct Seat airplane[MAXSEATS];
   char action;
   int flight_code;
   while ((flight_code = ChooseFlight()) != 5) {
-    int flight = flights[flight_code-1];
+    int flight = kFlights[flight_code-1];
     printf("You has choose a flight %d.\n", flight);
     LoadAndInitFile(flight, airplane);
     while ((action = OperateFlight(flight)) != 'g') {
@@ -67,44 +69,61 @@ int main(void) {
   return 0;
 }
 
-char * GetFilename(int flight) {
-  char flight_name[3];
-  char filename[14] = "flight_";
-  char *p_filename = "flight_";
-  sprintf(flight_name, "%d", flight);
-  strcat(filename, flight_name);
-  strcat(filename, ".dat");
-  p_filename = filename;
-  return p_filename;
+void GetFilename(int flight) {
+  const int kFlightNameLength = 21; // 为什么是21？
+  const int kFilenameLength = 16; // 为什么12不行？
+  const char kPostfix[5] = ".dat";
+  char flight_name[kFlightNameLength];
+  char filename[kFilenameLength] = "flight_";
+
+  p_filename = (char *)malloc(kFilenameLength * sizeof (char));
+  snprintf(flight_name, kFlightNameLength, "%d", flight);
+  strncat(filename, flight_name, strlen(flight_name));
+  strncat(filename, kPostfix, strlen(kPostfix));
+
+  if (p_filename != NULL)
+    p_filename = filename;
+
+  printf("GetFilename p_filename address %p\n", p_filename);
+  printf("GetFilename p_filename is %s***\n", p_filename);
+  if(!strcmp(p_filename, "flight_102.dat"))
+    printf("GetFilename p_filename is equal.\n");
+  printf("\n%s\n", STARS);
 }
 
-void LoadAndInitFile(int flight, struct seat airplane[]) {
+void LoadAndInitFile(int flight, struct Seat airplane[]) {
+  int count = 0;
   int index;
-  int count;
   FILE *p_seat;
-  const int size = sizeof (struct seat);
-  const char *filename = GetFilename(flight);
-  printf("LoadAndInitFile Filename is %s\n", filename);
+  const int kSize = sizeof (struct Seat);
+  GetFilename(flight);
+  printf("LoadAndInitFile p_filename address %p\n", p_filename);
+  printf("LoadAndInitFile p_filename is %s***\n", p_filename);
 
-  if ((p_seat = fopen(filename, "a+b")) == NULL) {
-  printf("LoadAndInitFile error Filename is %s\n", filename);
-    fprintf(stderr, "Can't open %s file in a+b mode.\n", filename);
+  if(!strcmp(p_filename, "flight_102.dat"))
+    printf("LoadAndInitFile p_filename is equal.\n");
+  printf("\n%s\n", STARS);
+
+  if ((p_seat = fopen(p_filename, "a+b")) == NULL) {
+    printf("LoadAndInitFile error Filename is %s\n", p_filename);
+    fprintf(stderr, "Can't open %s file in a+b mode.\n", p_filename);
     exit(EXIT_FAILURE);
   }
+  p_filename = NULL;
 
-  rewind(p_seat);            /* go to start of file     */
-  while (count < MAXSEATS && fread(&airplane[count], size, 1, p_seat) == 1) {
-    const struct seat current_seat = airplane[count];
+  rewind(p_seat);
+  while (count < MAXSEATS && fread(&airplane[count], kSize, 1, p_seat) == 1) {
+    const struct Seat kCurrentSeat = airplane[count];
     if (count == 0)
       puts("The assigned seats:");
 
-    if (!current_seat.assignable)
+    if (!kCurrentSeat.assignable)
       printf(
           "Seat flight: %d, number: %d, customer name: %s %s.\n",
-          current_seat.flight,
-          current_seat.number,
-          current_seat.firstname,
-          current_seat.lastname
+          kCurrentSeat.flight,
+          kCurrentSeat.number,
+          kCurrentSeat.firstname,
+          kCurrentSeat.lastname
           );
     ++count;
   }
@@ -125,10 +144,10 @@ int ChooseFlight(void) {
   int code;
   printf("\n%s%s\n", STARS, STARS);
   puts("To choose a flight, enter its number label:");
-  printf("1) Flight %d\n", flights[0]);
-  printf("2) Flight %d\n", flights[1]);
-  printf("3) Flight %d\n", flights[2]);
-  printf("4) Flight %d\n", flights[3]);
+  printf("1) Flight %d\n", kFlights[0]);
+  printf("2) Flight %d\n", kFlights[1]);
+  printf("3) Flight %d\n", kFlights[2]);
+  printf("4) Flight %d\n", kFlights[3]);
   puts("5) Quit");
   printf("%s%s\n", STARS, STARS);
   while (scanf("%d", &code) != 1 ||
@@ -160,7 +179,7 @@ char OperateFlight(int flight) {
   return action;
 }
 
-void ShowNumber(const struct seat airplane[], int length) {
+void ShowNumber(const struct Seat airplane[], int length) {
   int count = 0;
   int index = 0;
   while (index < length) {
@@ -170,19 +189,19 @@ void ShowNumber(const struct seat airplane[], int length) {
   printf("The number of empty seats is %d\n", count);
 }
 
-void ShowList(const struct seat airplane[], int length) {
+void ShowList(const struct Seat airplane[], int length) {
   int index = 0;
   puts("The list of empty seats:");
   while (index < length) {
-    const struct seat current_seat = airplane[index++];
-    if(current_seat.assignable)
-      printf("Number is %d\n", current_seat.number);
+    const struct Seat kCurrentSeat = airplane[index++];
+    if(kCurrentSeat.assignable)
+      printf("Number is %d\n", kCurrentSeat.number);
   }
 }
 
-void ShowAlphabeticalList(const struct seat airplane[], int length) {
-  struct seat *temp_airplane[MAXSEATS];
-  struct seat *temp;
+void ShowAlphabeticalList(const struct Seat airplane[], int length) {
+  struct Seat *temp_airplane[MAXSEATS];
+  struct Seat *temp;
   int index = 0;
   int top;
   int seek;
@@ -205,23 +224,23 @@ void ShowAlphabeticalList(const struct seat airplane[], int length) {
   index = 0;
   puts("Show alphabetical list of seats:");
   while (index < length) {
-    const struct seat *current_seat = temp_airplane[index++];
-    if (!current_seat->assignable)
+    const struct Seat *kCurrentSeat = temp_airplane[index++];
+    if (!kCurrentSeat->assignable)
       printf(
           "Seat info: flight is %d, number is %d, customer name is %s %s, confirm status: %s\n", 
-          current_seat->flight,
-          current_seat->number,
-          current_seat->firstname,
-          current_seat->lastname,
-          current_seat->confirmed ? "true" : "false"
+          kCurrentSeat->flight,
+          kCurrentSeat->number,
+          kCurrentSeat->firstname,
+          kCurrentSeat->lastname,
+          kCurrentSeat->confirmed ? "true" : "false"
           );
   }
 }
 
-void AssignSeat(struct seat airplane[], int length, int flight) {
+void AssignSeat(struct Seat airplane[], int length, int flight) {
   int index;
-  const char tip[] = "Enter the number of the seat you want assign, press [0] to end: ";
-  printf("%s", tip);
+  const char kTip[] = "Enter the number of the seat you want assign, press [0] to end: ";
+  printf("%s", kTip);
 
   while (scanf("%d", &index)) {
     if (!index) 
@@ -229,7 +248,7 @@ void AssignSeat(struct seat airplane[], int length, int flight) {
 
     if (index <= 0 && index > length) {
       puts("Enter an integer from 1 to 12, please.");
-      printf("%s", tip);
+      printf("%s", kTip);
       continue;
     }
 
@@ -245,25 +264,25 @@ void AssignSeat(struct seat airplane[], int length, int flight) {
       airplane[index-1].number = index;
       airplane[index-1].assignable = false;
 
-      const struct seat current_seat = airplane[index-1];
+      const struct Seat kCurrentSeat = airplane[index-1];
       printf("The seat you assigned: flight is %d, number is %d, customer name is %s %s\n", 
-          current_seat.flight,
-          current_seat.number,
-          current_seat.firstname,
-          current_seat.lastname);
+          kCurrentSeat.flight,
+          kCurrentSeat.number,
+          kCurrentSeat.firstname,
+          kCurrentSeat.lastname);
       break;
     }
-    printf("%s", tip);
+    printf("%s", kTip);
   }
 
   IgnoreChar();
   SaveToFile(airplane, length, flight);
 }
 
-void ConfirmAssignSeat(struct seat airplane[], int length, int flight) {
+void ConfirmAssignSeat(struct Seat airplane[], int length, int flight) {
   int index;
-  const char tip[] = "Enter the number of the seat you want confirm, press [0] to end: ";
-  printf("%s", tip);
+  const char kTip[] = "Enter the number of the seat you want confirm, press [0] to end: ";
+  printf("%s", kTip);
 
   while (scanf("%d", &index)) {
     if (!index) 
@@ -271,32 +290,35 @@ void ConfirmAssignSeat(struct seat airplane[], int length, int flight) {
 
     if (index <= 0 && index > length) {
       puts("Enter an integer from 1 to 12, please.");
-      printf("%s", tip);
+      printf("%s", kTip);
       continue;
     }
-      const struct seat current_seat = airplane[index-1];
-      if (current_seat.confirmed) {
+    const struct Seat kCurrentSeat = airplane[index-1];
+    if (kCurrentSeat.confirmed) {
       printf("The seat which number is %d already confirmed.\n",
-          current_seat.number);
-      } else {
+          kCurrentSeat.number);
+    } else if (kCurrentSeat.assignable) {
+      printf("The seat which number is %d was not assigned.\n",
+          kCurrentSeat.number);
+    } else {
       printf("The seat you confirmed: flight is %d, number is %d, customer name is %s %s\n", 
-          current_seat.flight,
-          current_seat.number,
-          current_seat.firstname,
-          current_seat.lastname);
+          kCurrentSeat.flight,
+          kCurrentSeat.number,
+          kCurrentSeat.firstname,
+          kCurrentSeat.lastname);
       airplane[index-1].confirmed = true;
-      }
-    printf("%s", tip);
+    }
+    printf("%s", kTip);
   }
 
   IgnoreChar();
   SaveToFile(airplane, length, flight);
 }
 
-void DeleteSeat(struct seat airplane[], int length, int flight) {
+void DeleteSeat(struct Seat airplane[], int length, int flight) {
   int index;
-  const char tip[] = "Enter the number of the seat you want delete, press [0] to end: ";
-  printf("%s", tip);
+  const char kTip[] = "Enter the number of the seat you want delete, press [0] to end: ";
+  printf("%s", kTip);
 
   while (scanf("%d", &index)) {
     if (!index) 
@@ -304,27 +326,27 @@ void DeleteSeat(struct seat airplane[], int length, int flight) {
 
     if (index <= 0 && index > length) {
       puts("Enter an integer from 1 to 12, please.");
-      printf("%s", tip);
+      printf("%s", kTip);
       continue;
     }
 
-    const struct seat current_seat = airplane[index-1];
-    if (current_seat.assignable) {
+    const struct Seat kCurrentSeat = airplane[index-1];
+    if (kCurrentSeat.assignable) {
       printf("The seat which number is %d already deleted.\n",
-          current_seat.number);
+          kCurrentSeat.number);
     } else {
       printf("The seat you deleted: flight is %d, number is %d, customer name is %s %s\n", 
-          current_seat.flight,
-          current_seat.number,
-          current_seat.firstname,
-          current_seat.lastname);
+          kCurrentSeat.flight,
+          kCurrentSeat.number,
+          kCurrentSeat.firstname,
+          kCurrentSeat.lastname);
 
       airplane[index-1].assignable = true;
       airplane[index-1].assignable = false;
       airplane[index-1].firstname[0] = '\0';
       airplane[index-1].lastname[0] = '\0';
     }
-    printf("%s", tip);
+    printf("%s", kTip);
   }
 
   IgnoreChar();
@@ -336,15 +358,16 @@ void IgnoreChar(void) {
     continue;
 }
 
-void SaveToFile(struct seat airplane[], int length, int flight) {
+void SaveToFile(struct Seat airplane[], int length, int flight) {
   FILE *p_seat;
-  const int size = sizeof (struct seat);
-  const char *filename = GetFilename(flight);
-  if ((p_seat = fopen(filename, "w+b")) == NULL) {
-    fprintf(stderr, "Can't open %s file in w+b mode.\n", filename);
+  const int kSize = sizeof (struct Seat);
+  GetFilename(flight);
+  printf("SaveToFile filename %s.\n", p_filename);
+  if ((p_seat = fopen(p_filename, "w+b")) == NULL) {
+    fprintf(stderr, "Can't open %s file in w+b mode.\n", p_filename);
     exit(EXIT_FAILURE);
   }
   rewind(p_seat);
-  fwrite(airplane, size, length, p_seat);
+  fwrite(airplane, kSize, length, p_seat);
   fclose(p_seat);
 }
