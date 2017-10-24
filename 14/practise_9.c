@@ -6,7 +6,6 @@
 #define MAXNAME 40
 #define MAXSEATS 12
 #define STARS "****************************************"
-char *p_filename = NULL;
 const int kFlights[4] = {102, 311, 444, 519};
 
 struct Seat {
@@ -18,7 +17,8 @@ struct Seat {
   char lastname[MAXNAME];
 };
 
-void GetFilename(int flight);
+void _GetFilename(int flight);
+char * GetFilename(int flight);
 void LoadAndInitFile(int flight, struct Seat airplane[]);
 int ChooseFlight(void);
 char OperateFlight(int flight);
@@ -69,7 +69,8 @@ int main(void) {
   return 0;
 }
 
-void GetFilename(int flight) {
+void _GetFilename(int flight) {
+  char *p_filename = NULL;
   const int kFlightNameLength = snprintf(NULL, 0, "%d", flight);
   const int kFilenameLength = 16;
   const char * const kPostfix = ".dat";
@@ -91,19 +92,33 @@ void GetFilename(int flight) {
   printf("\n%s\n", STARS);
 }
 
+char * GetFilename(int flight) {
+  char * p_filename;
+  switch (flight) {
+    case 102: // Why can't use kFlights[0]? error: expression is not an integer constant expression
+      p_filename = "flight_102.dat";
+      break;
+    case 311:
+      p_filename = "flight_311.dat";
+      break;
+    case 444:
+      p_filename = "flight_444.dat";
+      break;
+    case 519:
+      p_filename = "flight_519.dat";
+      break;
+    default:
+      fprintf(stderr, "The flight your choose not in the range.\n");
+  }
+  return p_filename;
+}
+
 void LoadAndInitFile(int flight, struct Seat airplane[]) {
   int count = 0;
   int index;
   FILE *p_seat;
   const int kSize = sizeof (struct Seat);
-  GetFilename(flight);
-
-  printf("LoadAndInitFile p_filename address %p\n", p_filename);
-  printf("LoadAndInitFile p_filename is %s***\n", p_filename);
-
-  if(!strcmp(p_filename, "flight_102.dat"))
-    printf("LoadAndInitFile p_filename is equal.\n");
-  printf("\n%s\n", STARS);
+  char * p_filename = GetFilename(flight);
 
   if ((p_seat = fopen(p_filename, "a+b")) == NULL) {
     fprintf(stderr, "Can't open %s file in a+b mode.\n", p_filename);
@@ -361,7 +376,7 @@ void IgnoreChar(void) {
 void SaveToFile(struct Seat airplane[], int length, int flight) {
   FILE *p_seat;
   const int kSize = sizeof (struct Seat);
-  GetFilename(flight);
+  char * p_filename = GetFilename(flight);
   printf("SaveToFile filename %s.\n", p_filename);
   if ((p_seat = fopen(p_filename, "w+b")) == NULL) {
     fprintf(stderr, "Can't open %s file in w+b mode.\n", p_filename);
